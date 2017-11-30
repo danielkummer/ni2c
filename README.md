@@ -12,8 +12,10 @@ The driver module has been tested with the following nixie tubes:
 
 ## BOM - Bill of Materials
 
-| 74141 | 2x | SN74141 or K155ID1 BCD decoder |
-| PCF8574 | 1x | PCF8574 i2c I/O expander | |
+| Name | Count | Component | Description |
+| ---- | ----- | --------- | ----------- |
+| 74141 | 2x | SN74141 or K155ID1 | BCD decoder |
+| PCF8574 | 1x | PCF8574 | i2c I/O expander |
 | SW1/SW2 | 1x | DIP Switch 4 | |
 | R1, R2 | 2x | 10kΩ Resistor | bus pull-up |
 | R3, R4, R5, R8 | 4x | 10kΩ Resistor | |
@@ -21,7 +23,7 @@ The driver module has been tested with the following nixie tubes:
 | C2, C3, C4| 3x | 0.1µF Capacitor | optional |
 | STACK PWR | 1x | pin-2 Male/female pin header | use male header with long pins to stack the module. Use a short pinned header for the bottom module |
 | HV PWR | 1x | pin-2 Male/female pin header | use male header with long pins to stack the module. Use a short pinned header for the bottom module |
-| PWR | 1x screw terminal | optional, power can also be supplied via STACK PWR |
+| PWR | 1x | screw terminal  | optional, power can also be supplied via STACK PWR |
 | I2C | 1x | pin-2 Male/female pin header | i2c bus, 1:SDA 2:SCL |
 | NX1, NX2 | 2x | pin-8 Male pin header | 90° angle for stackable module |
 | ANODE | 1x | pin-6 Male pin header | 90° angle for stackable module |
