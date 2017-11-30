@@ -1,9 +1,43 @@
-# Nixie i2c driver
+# Nixie i2c Driver
+
+This simple, custom nixie driver is indented to drive  _any_ kind of nixie tubes via i2c interface. It allows to address two  tubes with each i2c slave. The module is intended to be stackable and dynamically addressable using dip switches.
 
 * Supports up to 8 stacked drivers
 * Each driver module can power 2 nixie tubes
 
-## Introduction
+The driver module has been tested with the following nixie tubes:
+
+* IN-4
+* IN-7
+
+## BOM - Bill of Materials
+
+| 74141 | 2x | SN74141 or K155ID1 BCD decoder |
+| PCF8574 | 1x | PCF8574 i2c I/O expander | |
+| SW1/SW2 | 1x | DIP Switch 4 | |
+| R1, R2 | 2x | 10kΩ Resistor | bus pull-up |
+| R3, R4, R5, R8 | 4x | 10kΩ Resistor | |
+| R6, R7 | 2x | 10kΩ 2W Resistor | |
+| C2, C3, C4| 3x | 0.1µF Capacitor | optional |
+| STACK PWR | 1x | pin-2 Male/female pin header | use male header with long pins to stack the module. Use a short pinned header for the bottom module |
+| HV PWR | 1x | pin-2 Male/female pin header | use male header with long pins to stack the module. Use a short pinned header for the bottom module |
+| PWR | 1x screw terminal | optional, power can also be supplied via STACK PWR |
+| I2C | 1x | pin-2 Male/female pin header | i2c bus, 1:SDA 2:SCL |
+| NX1, NX2 | 2x | pin-8 Male pin header | 90° angle for stackable module |
+| ANODE | 1x | pin-6 Male pin header | 90° angle for stackable module |
+
+## Schema
+
+![description](/img/nixie_i2c_driver_stackable_schema.jpg)
+
+## Assembly instructions
+
+* The capacitors are optional as they're used as bypass
+
+## Problem Solving
+
+* If the tubes don't light up correctly you might have to change R6, R7. You can use [this calculator](http://www.csgnetwork.com/anoderescalc.html) to determine the resistor values based on the HV power supply
+
 
 ## I2c Interface Definition
 
