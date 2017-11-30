@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map For NI2C
+#######################################
+# Class
+#######################################
+
+NI2C		KEYWORD1
+
+#######################################
+# Methods and Functions
+#######################################
+
+begin		KEYWORD2
+write		KEYWORD2
+off			KEYWORD2
+lastError		KEYWORD2
+debug		KEYWORD2
+
+#######################################
+# Constants
+#######################################
+
+NI2C_OK				LITERAL1
+NI2C_MAX_MODULE_ERROR				LITERAL1
