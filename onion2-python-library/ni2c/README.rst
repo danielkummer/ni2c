@@ -7,7 +7,7 @@ in the constructor in order for it to work...
 To use , simply do::
 
     >>> import ni2c
-    >>> nixie ni2c.Ni2c(onionI2C.OnionI2C())
+    >>> nixie ni2c.Ni2c(onionI2C.OnionI2C(), 2)
     >>> nixie.write("1234")
 
 

@@ -18,24 +18,35 @@ class Ni2c:
         if num_of_chars > self.number_of_modules * 2:
             raise ValueError('The string length exceeds the number of configured modules')
 
+        result = 0xff
+
         for idx, c in enumerate(string):
             module = self._get_module_for_char_position(idx)
             address = self._get_i2c_address(module)
 
-            if c.isdigit():
-                value = int(c)
-            else:
-                value = self.CHAR_MAPPING[c]
+            value = self._get_i2c_value(c)
 
-            nixie_index = idx % 2
-
-            if idx == num_of_chars - 1 and nixie_index == 1:
-                nixie_index = 2
+            nixie_index = self._get_nixie_index(idx, num_of_chars)
 
             result = self._write_i2c(address, value, nixie_index)
             if result > 0:
                 self.error = result
                 break
+
+        return result
+
+    def _get_nixie_index(self, character_index, num_of_characters):
+        nixie_index = character_index % 2
+        if character_index == num_of_characters - 1 and nixie_index == 1:
+            nixie_index = 0xFF
+        return nixie_index
+
+    def _get_i2c_value(self, character):
+        if character.isdigit():
+            value = int(character)
+        else:
+            value = self.CHAR_MAPPING[character]
+        return value
 
     def off(self):
         for i in xrange(0, self.MAX_MODULES + 1):
