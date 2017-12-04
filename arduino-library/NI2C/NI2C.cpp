@@ -125,7 +125,7 @@ uint8_t NI2C::write8(const uint8_t address, const uint8_t value, const uint8_t n
  */
 uint8_t NI2C::getI2cAddress(uint8_t moduleNumber)
 {
-        uint8_t result = _startAddress + ((moduleNumber - 1) * 2);
+        uint8_t result = _startAddress + (moduleNumber * 2);
         if(_debug) {
                 char outBuffer[4];
                 sprintf(outBuffer, "%02X", result);
