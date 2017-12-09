@@ -13,11 +13,15 @@
 #ifndef _NI2C_H
 #define _NI2C_H
 
+#include <stdint.h>
+#include <string.h>
+
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
 #else
-#include "WProgram.h"
+//#include "WProgram.h"
 #endif
+
 
 #define NI2C_LIB_VERSION "0.1.0"
 
@@ -41,7 +45,7 @@ public:
  * @param debug Enable debug mode, default: false
  *
  */
-explicit NI2C(const uint8_t numberOfModules, const uint8_t startAddress, bool debug);
+explicit NI2C(const uint8_t numberOfModules = 1, const uint8_t startAddress = 0x38, bool debug = true);
 
 /**
  * Begin wire transmission
@@ -85,15 +89,6 @@ void debug(const bool debug);
 private:
 
 /**
- * Get the i2c address based on the module number
- *
- * @param moduleNumber number of the nixie driver module, starting at 1
- *
- * @return i2c address of module in the range 0x70..0x7E
- */
-uint8_t getI2cAddress(uint8_t moduleNumber);
-
-/**
  * Get the corresponding module for a given character position.
  * One module supports two characters.
  *
@@ -121,12 +116,11 @@ uint8_t mapCharToValue(char c);
  *
  * @return i2c status code
  */
-uint8_t write8(const uint8_t address, const uint8_t value, const uint8_t nixieIndex);
+uint8_t write8(const uint8_t address, const uint8_t value);
 
 bool _debug;
 uint8_t _numberOfModules;
 uint8_t _startAddress;
-uint8_t _dataOut;
 int _error;
 };
 
