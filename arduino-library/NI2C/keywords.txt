@@ -21,4 +21,3 @@ debug		KEYWORD2
 #######################################
 
 NI2C_OK				LITERAL1
-NI2C_MAX_MODULE_ERROR				LITERAL1

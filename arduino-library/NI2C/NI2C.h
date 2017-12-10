@@ -26,7 +26,6 @@
 #define NI2C_LIB_VERSION "0.1.0"
 
 #define NI2C_OK               0x00
-#define NI2C_MAX_MODULE_ERROR 0x82
 
 #define MAX_MODULES     8
 #define NIXIE_TUBE_OFF  0xFF
@@ -45,7 +44,7 @@ public:
  * @param debug Enable debug mode, default: false
  *
  */
-explicit NI2C(const uint8_t numberOfModules = 1, const uint8_t startAddress = 0x38, bool debug = true);
+explicit NI2C(const uint8_t numberOfModules = 1, const uint8_t startAddress = 0x38);
 
 /**
  * Begin wire transmission
@@ -71,7 +70,8 @@ int lastError();
  * 'n' '+' 'm' 'A' 'V' 'M' 'o' 'i' 'K' '-'
  * The characters are mapped to the numbers 0-9 (in this order)
  */
-void write(const char* value);
+uint8_t write(const char* value);
+uint8_t write(const char* value, uint8_t module);
 
 /**
  * Turn off all nixie tubes
@@ -118,9 +118,15 @@ uint8_t mapCharToValue(char c);
  */
 uint8_t write8(const uint8_t address, const uint8_t value);
 
+void log(const char* message);
+
 bool _debug;
 uint8_t _numberOfModules;
+uint8_t _maxAllowedCharacters;
 uint8_t _startAddress;
+
+const char* _lookup;
+
 int _error;
 };
 
