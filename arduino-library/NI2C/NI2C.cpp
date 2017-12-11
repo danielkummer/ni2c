@@ -5,21 +5,15 @@
 // VERSION: 0.1.0
 // PURPOSE: I2C nixie module library for arduino
 //     URL: [TODO]
-//
-// HISTORY:
-// 0.1.0 initial version
-//
+
 
 #include "NI2C.h"
 
+#include <stdarg.h>
+#include <stdio.h>
+
 #if defined(ARDUINO) && ARDUINO >= 100
 #include <Wire.h>
-#else
-
-#include <iostream>
-#include <cmath>
-#include <math.h>
-
 #endif
 
 NI2C::NI2C(const uint8_t numberOfModules, const uint8_t startAddress)
@@ -36,13 +30,20 @@ void NI2C::debug(bool debug = true) {
         _debug = debug;
 }
 
-void NI2C::log(const char * message) {
-#if defined(ARDUINO)
-        Serial.println(message);
-#else
-        std::cout << message << std::endl;
-#endif
+void NI2C::log(const char* format, ...) {
+  char outBuffer[60];
+  va_list(args);
+  va_start (args, format);
+  vsprintf (outBuffer, format, args);
+  va_end (args); 
+  
+  #if defined(ARDUINO)
+    Serial.println(outBuffer);
+  #else
+    std::cout << outBuffer << std::endl;
+  #endif 
 }
+
 
 void NI2C::begin()
 {
@@ -50,6 +51,32 @@ void NI2C::begin()
         Wire.begin();
 #endif
 }
+
+void NI2C::scan() {
+#if defined(ARDUINO)
+  uint8_t foundDevicesCount = 0;
+  uint8_t error = 0;
+  for(uint8_t address; address < 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    if (error == 0) {
+      log("DEBUG - I2c found at: 0x%02x", address);
+      foundDevicesCount++;
+    }
+  }
+  if (foundDevicesCount == 0) {
+    log("No I2C devices found");
+  } else {
+    log("done");    
+  }
+  
+
+#else
+  log("Not implemented in non-arduino");
+#endif
+}
+
+
 
 uint8_t NI2C::write(const char* value, uint8_t module) {
   uint8_t address = _startAddress + module;
@@ -61,7 +88,8 @@ uint8_t NI2C::write(const char* value, uint8_t module) {
           uint8_t intValue = 0;
 
           intValue = isdigit(c) ? c - '0' : mapCharToValue(c);
-          outValue = tupelIdx % 2 == 0 ? (outValue & 0x0F) | (intValue << 4) : (outValue & 0xF0) | intValue;
+          //switch outvalue byte order
+          outValue = tupelIdx % 2 == 0 ? (outValue & 0xF0) | intValue : (outValue & 0x0F) | (intValue << 4);
   }
 
   return write8(address, outValue);
@@ -110,9 +138,7 @@ void NI2C::off() {
 uint8_t NI2C::write8(const uint8_t address, const uint8_t value)
 {
         if(_debug) {
-                char outBuffer[32];
-                sprintf(outBuffer, "DEBUG - I2c: 0x%02x - value: 0x%02x", address, value);
-                log(outBuffer);
+                log("DEBUG - I2c: 0x%02x - value: 0x%02x", address, value);
         }
 
         uint8_t result = NI2C_OK;
@@ -122,9 +148,7 @@ uint8_t NI2C::write8(const uint8_t address, const uint8_t value)
         result =  Wire.endTransmission();
 
         if(_debug) {
-                char outBuffer[24];
-                sprintf(outBuffer, "DEBUG - I2c result: 0x%02X", result);
-                log(result);
+                log("DEBUG - I2c result: 0x%02X", result);
         }
 #endif
         return result;
@@ -154,9 +178,7 @@ uint8_t NI2C::mapCharToValue(char c)
         }
 
         if(_debug) {
-                char outBuffer[36];
-                sprintf(outBuffer, "DEBUG - Character mapping [%c]->[%d]", c,result);
-                log(outBuffer);
+          log("DEBUG - Character mapping [%c]->[%d]", c,result);          
         }
 
         return result;
@@ -167,9 +189,7 @@ int NI2C::lastError()
         const char* returnMessages[] = { "SUCCESS", "data too long to fit transmit buffer", "received NACK on transmit of address", "received NACK on transmit of data", "other error" };
         int e = _error;
         if(_debug) {
-                char outBuffer[58];
-                sprintf(outBuffer, "DEBUG - I2c error: %s", returnMessages[e]);
-                log(outBuffer);
+                log("DEBUG - I2c error: %s", returnMessages[e]);
         }
         _error = NI2C_OK;
         return e;

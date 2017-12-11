@@ -13,13 +13,14 @@
 #ifndef _NI2C_H
 #define _NI2C_H
 
-#include <stdint.h>
-#include <string.h>
-
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
 #else
-//#include "WProgram.h"
+#include <stdint.h>
+#include <string.h>
+#include <iostream>
+#include <cmath>
+#include <math.h>
 #endif
 
 
@@ -52,6 +53,12 @@ explicit NI2C(const uint8_t numberOfModules = 1, const uint8_t startAddress = 0x
 void begin();
 
 /**
+ * Scan the i2c bus for reachable addresses.
+ *
+ */
+void scan();
+
+/**
  * Get the last i2c error and reset the error code to success.
  */
 int lastError();
@@ -69,8 +76,19 @@ int lastError();
  * The following character mappins are supported if a IN-7 tube is in use:
  * 'n' '+' 'm' 'A' 'V' 'M' 'o' 'i' 'K' '-'
  * The characters are mapped to the numbers 0-9 (in this order)
+ *
+ * @return i2c bus result code
  */
 uint8_t write(const char* value);
+
+/**
+ * Write a tupel string to a specific module
+ * 
+ * @param value the string to write, must be length 2
+ * @param module the module to write to, zero based
+ * 
+ * @return i2c bus result code
+ */
 uint8_t write(const char* value, uint8_t module);
 
 /**
@@ -118,7 +136,9 @@ uint8_t mapCharToValue(char c);
  */
 uint8_t write8(const uint8_t address, const uint8_t value);
 
-void log(const char* message);
+//void log(const char* message);
+
+void log(const char* messageFormat, ...);
 
 bool _debug;
 uint8_t _numberOfModules;
