@@ -1,11 +1,8 @@
 //
 //    FILE: NI2C.cpp
 //  AUTHOR: Daniel Kummer
-//    DATE: 09-nov-2017
-// VERSION: 0.1.0
 // PURPOSE: I2C nixie module library for arduino
-//     URL: [TODO]
-
+//     URL: https://danielkummer.github.io/ni2c/
 
 #include "NI2C.h"
 
@@ -33,9 +30,9 @@ void NI2C::debug(bool debug = true) {
 void NI2C::log(const char* format, ...) {
   char outBuffer[60];
   va_list(args);
-  va_start (args, format);
-  vsprintf (outBuffer, format, args);
-  va_end (args); 
+  va_start(args, format);
+  vsprintf(outBuffer, format, args);
+  va_end(args); 
   
   #if defined(ARDUINO)
     Serial.println(outBuffer);
@@ -69,19 +66,15 @@ void NI2C::scan() {
   } else {
     log("done");    
   }
-  
-
 #else
   log("Not implemented in non-arduino");
 #endif
 }
 
-
-
 uint8_t NI2C::write(const char* value, uint8_t module) {
   uint8_t address = _startAddress + module;
-
   uint8_t outValue = 0;
+  uint8_t result = NI2C_OK;
 
   for(uint8_t tupelIdx = 0; tupelIdx < 2; tupelIdx++) {
           char c = value[tupelIdx];
@@ -91,8 +84,21 @@ uint8_t NI2C::write(const char* value, uint8_t module) {
           //switch outvalue byte order
           outValue = tupelIdx % 2 == 0 ? (outValue & 0xF0) | intValue : (outValue & 0x0F) | (intValue << 4);
   }
+  
+  if(_debug) {
+    log("DEBUG - I2c: 0x%02x - value: 0x%02x", address, outValue);
+  }
 
-  return write8(address, outValue);
+#if defined(ARDUINO)
+  Wire.beginTransmission(address);
+  Wire.write(value);
+  result =  Wire.endTransmission();
+
+  if(_debug) {
+    log("DEBUG - I2c result: 0x%02X", result);
+  }
+#endif
+  return result;
 }
 
 uint8_t NI2C::write(const char* value)
@@ -114,17 +120,19 @@ uint8_t NI2C::write(const char* value)
         uint8_t result = NI2C_OK;
 
         uint8_t lastCharacterIndex = (numOfChars > _maxAllowedCharacters) ? _maxAllowedCharacters : numOfChars;
-        for(uint8_t i = 0; i < lastCharacterIndex; i = i+2 ) {
-                uint8_t module = getModuleForCharPosition(i);
-                uint8_t outValue = 0;
-
-                char tupel[] = {value[i], value[i+1]};
-
-                result = write(tupel, module);
-                if(result > 0) {
-                        _error = result;
-                        break; //break for loop - don't write more!
-                }
+        
+        for(uint8_t i = 0; i < lastCharacterIndex; i = i + 2) {          
+          uint8_t module = getModuleForCharPosition(i);
+          uint8_t outValue = 0;
+          
+          char tupel[2];
+          strncpy(tupel, value + i, 2);
+          
+          result = write(tupel, module);
+          if(result > 0) {
+            _error = result;
+            break; //break for loop - don't write more!
+          }          
         }
         return result;
 }
@@ -133,26 +141,6 @@ void NI2C::off() {
   for(uint8_t i = 0; i < _numberOfModules ; i++) {
       write("  ", i);
   }
-}
-
-uint8_t NI2C::write8(const uint8_t address, const uint8_t value)
-{
-        if(_debug) {
-                log("DEBUG - I2c: 0x%02x - value: 0x%02x", address, value);
-        }
-
-        uint8_t result = NI2C_OK;
-#if defined(ARDUINO)
-        Wire.beginTransmission(address);
-        Wire.write(value);
-        result =  Wire.endTransmission();
-
-        if(_debug) {
-                log("DEBUG - I2c result: 0x%02X", result);
-        }
-#endif
-        return result;
-
 }
 
 uint8_t NI2C::getModuleForCharPosition(uint8_t charPosition)

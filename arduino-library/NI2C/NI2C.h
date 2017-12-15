@@ -23,14 +23,9 @@
 #include <math.h>
 #endif
 
-
-#define NI2C_LIB_VERSION "0.1.0"
-
-#define NI2C_OK               0x00
-
+#define NI2C_OK         0x00
 #define MAX_MODULES     8
 #define NIXIE_TUBE_OFF  0xFF
-
 
 class NI2C {
 public:
@@ -126,18 +121,10 @@ uint8_t getModuleForCharPosition(uint8_t charPosition);
 uint8_t mapCharToValue(char c);
 
 /**
- * Writes the defined value to the i2c bus.
- *
- * @param address the i2c address of the module
- * @param value the value to write.
- * @param nixieIndex the index of the nixie output to write to, can be 0,1 to perform biteshifting or a higher number to directly write out the value
- *
- * @return i2c status code
+ * Log a formatted message
+ * @param messageFormat the message format string
+ * @param ... format parameters
  */
-uint8_t write8(const uint8_t address, const uint8_t value);
-
-//void log(const char* message);
-
 void log(const char* messageFormat, ...);
 
 bool _debug;
