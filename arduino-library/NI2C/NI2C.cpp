@@ -20,7 +20,7 @@ NI2C::NI2C(const uint8_t numberOfModules, const uint8_t startAddress)
         _debug = false;
         _startAddress = startAddress;
         _error = NI2C_OK;
-        _lookup = "n+mAVMoiK-";
+        _lookup = "n+mAVMo~K-";
 }
 
 void NI2C::debug(bool debug = true) {

@@ -17,21 +17,21 @@ void loop() {
     int seconds = 0;
   
     char outBuffer[9];
-    sprintf(outBuffer, "%02d %02d %02d", hours, minutes, seconds);
+    sprintf(outBuffer, "%02d+%02d-%02d~", hours, minutes, seconds);
     
     nixie.write(outBuffer);
     
     seconds++;
-
-    if(minutes == 59 && seconds == 59) { 
-      hours++;
-      minutes = 0;
-    }
-    
-    if(seconds == 59) {
+    if(seconds > 59) {
       minutes++;
       seconds = 0;
     }
 
+    if(minutes > 59) { 
+      hours++;
+      minutes = 0;
+      seconds = 0;
+    }	
+   
    delay(1000);
 }
