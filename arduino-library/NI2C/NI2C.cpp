@@ -32,13 +32,13 @@ void NI2C::log(const char* format, ...) {
   va_list(args);
   va_start(args, format);
   vsprintf(outBuffer, format, args);
-  va_end(args); 
-  
+  va_end(args);
+
   #if defined(ARDUINO)
     Serial.println(outBuffer);
   #else
     std::cout << outBuffer << std::endl;
-  #endif 
+  #endif
 }
 
 
@@ -64,7 +64,7 @@ void NI2C::scan() {
   if (foundDevicesCount == 0) {
     log("No I2C devices found");
   } else {
-    log("done");    
+    log("done");
   }
 #else
   log("Not implemented in non-arduino");
@@ -84,14 +84,14 @@ uint8_t NI2C::write(const char* value, uint8_t module) {
           //switch outvalue byte order
           outValue = tupelIdx % 2 == 0 ? (outValue & 0xF0) | intValue : (outValue & 0x0F) | (intValue << 4);
   }
-  
+
   if(_debug) {
     log("DEBUG - I2c: 0x%02x - value: 0x%02x", address, outValue);
   }
 
 #if defined(ARDUINO)
   Wire.beginTransmission(address);
-  Wire.write(value);
+  Wire.write(outValue);
   result =  Wire.endTransmission();
 
   if(_debug) {
@@ -107,32 +107,28 @@ uint8_t NI2C::write(const char* value)
         bool isEqual = numOfChars % 2 == 0;
         char stringValue[isEqual ? numOfChars : numOfChars + 1];
 
-        strcat(stringValue, value);
+        memcpy(stringValue, value, numOfChars);
 
         if(!isEqual) {
                 strcat(stringValue, " ");
-                if(_debug) {
-                        log("INFO - Appended extra character for even output string");
-                }
-
         }
 
         uint8_t result = NI2C_OK;
 
         uint8_t lastCharacterIndex = (numOfChars > _maxAllowedCharacters) ? _maxAllowedCharacters : numOfChars;
-        
-        for(uint8_t i = 0; i < lastCharacterIndex; i = i + 2) {          
+
+        for(uint8_t i = 0; i < lastCharacterIndex; i = i + 2) {
           uint8_t module = getModuleForCharPosition(i);
           uint8_t outValue = 0;
-          
-          char tupel[2];
-          strncpy(tupel, value + i, 2);
-          
+
+          char tupel[3];
+          memcpy(tupel, stringValue + i, 2);
+          tupel[2] = '\0';
+
           result = write(tupel, module);
           if(result > 0) {
             _error = result;
-            break; //break for loop - don't write more!
-          }          
+          }
         }
         return result;
 }
@@ -166,7 +162,7 @@ uint8_t NI2C::mapCharToValue(char c)
         }
 
         if(_debug) {
-          log("DEBUG - Character mapping [%c]->[%d]", c,result);          
+          //log("DEBUG - Character mapping [%c]->[%d]", c,result);
         }
 
         return result;
